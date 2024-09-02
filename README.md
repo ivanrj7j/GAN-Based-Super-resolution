@@ -12,5 +12,6 @@ Implementation of Super resolution models using GANs
 - Compare the difference between using GAN, hybrid approach and MSE only.
 - Compare results with or without Depth
 - Experiment with output of range [0, 1] instead of [-1, 1]
+- Instead of using a classifier inside the discriminator itself, try just going with the nxn representation instead that way you can have loss for each region like in pix2pix networks.
 
 `README.md will be updated based on the results of the project later`
