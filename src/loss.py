@@ -7,9 +7,9 @@ class VGGLoss(nn.Module):
     """
     VGG loss using pretrained vgg19 model
     """
-    def __init__(self, device="cuda", *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.vgg = vgg19(weights=VGG19_Weights.DEFAULT).features[:36].eval().to(device)
+        self.vgg = vgg19(weights=VGG19_Weights.DEFAULT).features[:36].eval().to(config.device)
         self.loss = nn.MSELoss()
 
         for param in self.vgg.parameters():
