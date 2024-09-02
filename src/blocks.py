@@ -80,7 +80,7 @@ class DiscriminatorBlock(nn.Module):
     - `BatchNorm2d`: Batch normalization for the output channels
     - `LeakyReLU`: Leaky ReLU activation function with `negative_slope=0.2`
     """
-    def __init__(self, inChannels:int, outChannels:int, kernelSize:int, stride:int, *args, **kwargs) -> None:
+    def __init__(self, inChannels:int, outChannels:int, kernelSize:int, stride:int, useBatchNorm:bool=True, *args, **kwargs) -> None:
         """
         Initializes a Disscriminator BLock
 
@@ -89,11 +89,12 @@ class DiscriminatorBlock(nn.Module):
         outChannels (int): Number of output channels
         kernelSize (int): Kernel size of the convolutional layers
         stride (int): Stride of the convolutional layers
+        useBatchNorm (bool): Whether to use batch normalization or not
         """
         super().__init__(*args, **kwargs)
         self.block = nn.Sequential(
-            nn.Conv2d(inChannels, outChannels, kernel_size=kernelSize, stride=stride),
-            nn.BatchNorm2d(outChannels),
+            nn.Conv2d(inChannels, outChannels, kernel_size=kernelSize, stride=stride, padding=1),
+            nn.BatchNorm2d(outChannels)if useBatchNorm else nn.Identity(),
             nn.LeakyReLU(0.2)
         )
     
