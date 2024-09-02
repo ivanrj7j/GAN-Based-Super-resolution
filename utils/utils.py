@@ -2,6 +2,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
 from src import Generator, Discriminator
+import config
 
 def calculatePSNR(originalImage:torch.Tensor, generatedImage:torch.Tensor):
     """
@@ -96,5 +97,13 @@ def saveModels(generator:Generator, discriminator:Discriminator, savePath:str, v
     -   path/to/save/models/gen-v1.pth
     -   path/to/save/models/dis-v1.pth
     """
-    torch.save(generator.state_dict(), f"{savePath}/gen-{version}.pth")
-    torch.save(discriminator.state_dict(), f"{savePath}/dis-{version}.pth")
+    if generator is not None:
+        torch.save(generator.state_dict(), f"{savePath}/gen-{version}.pth")
+    if discriminator is not None:
+        torch.save(discriminator.state_dict(), f"{savePath}/dis-{version}.pth")
+
+def loadMidas():
+    """
+    Loads midas model
+    """
+    return torch.hub.load(config.midasName, config.midasType).to(config.device)
