@@ -62,4 +62,7 @@ class Generator(nn.Module):
         upscaleOutput = self.upscaleBlocks.forward(residualOutput)
         # upscaling the image 
         
-        return self.finalLayer.forward(upscaleOutput)
+        finalOutput = self.finalLayer.forward(upscaleOutput)
+
+        return torch.tanh(finalOutput)
+        # applying tanh to the final output is not in the paper 
