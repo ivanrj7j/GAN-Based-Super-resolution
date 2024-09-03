@@ -33,7 +33,7 @@ class Generator(nn.Module):
             nn.PReLU()
         )
 
-        residualBlocks = [ResBlock(64, 64, kernelSize=3, stride=1) for _ in range(5)]
+        residualBlocks = [ResBlock(64, 64, kernelSize=3, stride=1) for _ in range(17)]
         finalResidual = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding="same"),
             nn.BatchNorm2d(64)

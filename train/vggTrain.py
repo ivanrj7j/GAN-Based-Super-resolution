@@ -84,6 +84,7 @@ def train():
         if epoch % config.decayEvery == 0:
             genScheduler.step()
             discScheduler.step()
+            print(f"Decaying [{genOpt.param_groups[0]["lr"]}]")
 
         generator.eval()
         discriminator.eval()

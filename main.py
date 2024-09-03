@@ -1,4 +1,4 @@
-from train import trainVGG
+from train.vggTrain import train
 
 if __name__ == "__main__":
-    trainVGG()
+    train()

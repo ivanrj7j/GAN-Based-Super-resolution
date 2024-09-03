@@ -2,6 +2,7 @@ import torch.nn as nn
 from utils import loadMidas, loadModels
 import config
 from torch.optim import Adam
+from torch.optim.lr_scheduler import ExponentialLR
 from torch import GradScaler, autocast
 from utils import getDataloader, writeSummary, saveModels
 from tqdm import tqdm
@@ -9,18 +10,20 @@ from torch.utils.tensorboard import SummaryWriter
 import time
 
 model, _ = loadModels(config.generatorPath, "", None, 3, config.scale, config.device)
-
 if config.shouldLoadMidas:
     midas = loadMidas()
     model, _ = loadModels(config.generatorPath, "", midas, 3, config.scale, config.device)
 
 lossFunc = nn.MSELoss()
+
 optimizer = Adam(model.parameters(), config.lr)
-scaler = GradScaler(config.device)
+
 trainLoader = getDataloader(config.trainDatasetPath, config.scale, config.resolution, config.assumeResolution, config.numWorkers, config.batchSize)
 valLoader = getDataloader(config.valDatasetPath, config.scale, config.resolution, config.assumeResolution, config.numWorkers, config.batchSize)
+
 writer = SummaryWriter(f"runs/mse/{round(time.time())}")
 
+genScheduler = ExponentialLR(optimizer, config.decayGamma)
 
 def train():
     print("Training...")
@@ -32,20 +35,22 @@ def train():
 
         for i, (x, y) in enumerate(loop, start=1):
             x, y = x.to(config.device), y.to(config.device)
-            
-            with autocast(config.device):
-                generated = model(x)
-                currentLoss = lossFunc(generated, y)
-                loss += currentLoss
+
+            generated = model(x)
+            currentLoss = lossFunc(generated, y)
+            loss += currentLoss
             
             optimizer.zero_grad()
-            scaler.scale(currentLoss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+            currentLoss.backward()
+            optimizer.step()
             
             loop.set_postfix(loss=loss.item()/i)
         
         loss = loss / len(trainLoader)
+
+        if epoch % config.decayEvery == 0:
+            genScheduler.step()
+            print(f"Decaying [{optimizer.param_groups[0]["lr"]}]")
 
         model.eval()
 

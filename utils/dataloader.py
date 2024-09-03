@@ -27,9 +27,6 @@ class SuperResolutionDataset(Dataset):
 
         self.albumentationTransforms = A.Compose([
             A.Resize(self.resolution//self.scale, self.resolution//self.scale),
-            A.RandomBrightnessContrast(),
-            A.ColorJitter(),
-            A.ImageCompression(90, 100, p=1),
             A.Blur(p=1),
             A.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         ])
