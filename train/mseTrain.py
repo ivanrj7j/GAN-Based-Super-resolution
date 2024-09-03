@@ -51,7 +51,7 @@ def train():
 
         for x, y in valLoader:
             x, y = x.to(config.device), y.to(config.device)
-            writeSummary(writer, x, y, model, loss, epoch)
+            writeSummary(writer, x, y, model, {"loss":loss}, epoch)
             break
 
         if epoch % config.checkpointInterval == 0:

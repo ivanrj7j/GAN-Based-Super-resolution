@@ -30,7 +30,7 @@ def generateImage(originalImage:torch.Tensor, generator:Generator):
 
         return output
 
-def writeSummary(writer:SummaryWriter, inputBatch:torch.Tensor, upscaledImages:torch.Tensor, generator:Generator, loss:float, epoch:int):
+def writeSummary(writer:SummaryWriter, inputBatch:torch.Tensor, upscaledImages:torch.Tensor, generator:Generator, losses:dict[str, float], epoch:int):
     """
     Writes the input batch, generated images, and loss to TensorBoard.
 
@@ -39,7 +39,7 @@ def writeSummary(writer:SummaryWriter, inputBatch:torch.Tensor, upscaledImages:t
     inputBatch (torch.Tensor): Input batch tensor
     upscaledImages (torch.Tensor): Original image with higher resolution `Not Genrated Images`.
     generator (Generator): Generator model
-    loss (float): Loss value
+    losses (dict[str, float]): Dictionary containing loss values for different components
     epoch (int): Current epoch number
     """
     images = generateImage(inputBatch, generator)
@@ -48,8 +48,9 @@ def writeSummary(writer:SummaryWriter, inputBatch:torch.Tensor, upscaledImages:t
     
     writer.add_image('Original', make_grid(upscaledImages), global_step=epoch, )
     writer.add_image('Generated Image', make_grid(images), global_step=epoch, )
-    writer.add_scalar('Loss', loss, global_step=epoch)
     writer.add_scalar('PSNR', psnr, global_step=epoch)
+    for loss in losses:
+        writer.add_scalar(loss, losses[loss], global_step=epoch)
 
 def loadModels(generatorPath:str, discriminatorPath:str, midas:torch.nn.Module=None, imageChannels:int=3, scale=4, device:str="cuda"):
     """
@@ -65,7 +66,7 @@ def loadModels(generatorPath:str, discriminatorPath:str, midas:torch.nn.Module=N
     """
 
     generator = Generator(midas, imageChannels, scale)
-    discriminator = Discriminator(imageChannels)
+    discriminator = Discriminator(imageChannels, config.useDiscClassifier)
 
     if generatorPath != "":
         print(f"Loading {generatorPath}")

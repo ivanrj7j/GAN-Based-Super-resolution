@@ -5,8 +5,8 @@ trainDatasetPath = "dataset\\train\\high_res"
 valDatasetPath = "dataset\\val\\high_res"
 # dataset paths 
 
-batchSize = 8
-epochs = 100
+batchSize = 3*6
+epochs = 200
 lr = 1e-4
 # training parameters 
 
@@ -21,7 +21,7 @@ discriminatorPath = ""
 # paths to existing trained generator and discriminator models, if any. weights would be loaded for training.
 
 checkpointInterval = 5
-savePath = "checkpoints"
+savePath = "checkpoints/vgg"
 # saves model weights every 'checkpointInterval' epochs
 
 scale = 4
@@ -29,7 +29,18 @@ scale = 4
 
 device = "cuda"
 
-resolution = 512
-assumeResolution = True
-numWorkers = 4
+resolution = 96
+assumeResolution = False
+numWorkers = 0
 # data loader params 
+# numWorkers = 4 meant 269s for vgg net 
+# numWorkers = 2 meant 242 for vgg net 
+
+adLambda = 1 #adveserial loss
+vggLambda = 6 #vgg loss
+# loss weights
+
+useDiscClassifier = False
+
+decayGamma = 0.95
+decayEvery = 5
